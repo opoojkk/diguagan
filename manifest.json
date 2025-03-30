@@ -1,0 +1,31 @@
+{
+  "name": "地瓜干",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "小红薯图片批量下载",
+  "permissions": [
+    "activeTab",
+    "downloads"
+  ],
+  "background": {
+    "scripts": [
+      "scripts/background.js"
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*/*"
+      ],
+      "js": [
+        "scripts/content.js"
+      ]
+    }
+  ],
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "48": "assets/icons/icon-48.png"
+    }
+  }
+}

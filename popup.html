@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/popup.css">
+</head>
+
+<body>
+<div class="container">
+    <div class="loading-overlay">
+        <div class="spinner"></div>
+        <div>正在加载图片...</div>
+    </div>
+
+    <div class="error-message">
+        <p>图片加载失败，请重试</p>
+        <button id="retry-button">重试</button>
+    </div>
+
+    <div class="empty-message" style="display: none;">
+        <p>没有找到任何图片</p>
+    </div>
+    <div class="controls">
+        <button id="toggle-all">全选/反选</button>
+        <button id="download-selected">下载选中</button>
+    </div>
+    <div id="image-grid" class="image-grid"></div>
+</div>
+</div>
+<script src="scripts/popup.js"></script>
+</body>
+
+</html>
