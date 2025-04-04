@@ -6,7 +6,7 @@ let currentTabId = null;
 // 添加DOM加载完成监听
 document.addEventListener('DOMContentLoaded', () => {
     // 先获取当前标签页ID
-    browser.tabs.query({active: true, currentWindow: true}).then(tabs => {
+    browser.tabs.query({ active: true, currentWindow: true }).then(tabs => {
         currentTabId = tabs[0].id;
         console.log(`弹窗加载完成，发送获取图片请求, 标签页ID:${currentTabId}`);
 
@@ -108,13 +108,20 @@ function renderImages(urls) {
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
         checkbox.className = 'checkbox-label';
+        // checkbox.checked = data.selectedUrls.includes(url);
         checkbox.onchange = (e) => {
+            console.log(`e:${JSON.stringify(e)}`)
+            e.stopPropagation();
+            const data = tabData.get(currentTabId);
+            const currentUrl = checkbox.closest('.image-item').querySelector('img').src;
+
             if (e.target.checked) {
-                const data = tabData.get(currentTabId);
-                data.selectedUrls.push(url);
+                data.selectedUrls = [...new Set([...data.selectedUrls, currentUrl])];
             } else {
-                data.selectedUrls = data.selectedUrls.filter(u => u !== url);
+                data.selectedUrls = data.selectedUrls.filter(u => u !== currentUrl);
             }
+            console.log(`checked:${e.target.checked}`)
+            checkbox.checked = !e.target.checked; // 同步DOM状态
         };
 
         // 添加缩略图
@@ -127,15 +134,19 @@ function renderImages(urls) {
         openBtn.innerHTML = '↗';
         openBtn.onclick = () => window.open(url);
 
+        // 处理整个item点击（排除按钮区域）
         item.onclick = (e) => {
             const isOpenButton = e.target.closest('.open-button');
             if (!isOpenButton) {
                 checkbox.checked = !checkbox.checked;
                 const data = tabData.get(currentTabId);
+                console.log(`tabId: ${currentTabId},data:${JSON.stringify(data)}`);
                 if (checkbox.checked) {
                     data.selectedUrls.push(url);
+                    checkbox.checked = true;
                 } else {
                     data.selectedUrls = data.selectedUrls.filter(u => u !== url);
+                    checkbox.checked = false;
                 }
             }
         };
@@ -216,7 +227,7 @@ showLoading();
 // 重试按钮点击事件
 document.getElementById('retry-button').addEventListener('click', () => {
     showLoading();
-    browser.runtime.sendMessage({action: 'retryFetch'});
+    browser.runtime.sendMessage({ action: 'retryFetch' });
 });
 
 // 图片加载完成回调
