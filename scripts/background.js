@@ -86,13 +86,39 @@ browser.runtime.onMessage.addListener((request, sender) => {
 
     if (request.action === 'downloadImage') {
         console.log('处理下载请求');
-        const filename = request.url.split('/').pop() || `image_${Date.now()}.jpg`;
-        browser.downloads.download({
-            url: request.url,
-            filename: filename,
-            conflictAction: 'uniquify',
-            saveAs: false
-        }).catch(console.error);
+        const getFileExtension = (contentType) => {
+            const mimeMap = {
+                'image/jpeg': 'jpg',
+                'image/png': 'png',
+                'image/gif': 'gif',
+                'image/webp': 'webp'
+            };
+            return mimeMap[contentType?.split(';')[0]] || 'jpg';
+        };
+    
+        fetch(request.url, { method: 'HEAD' })
+            .then(response => {
+                const contentType = response.headers.get('Content-Type');
+                const ext = getFileExtension(contentType);
+                const filename = request.url.split('/').pop().replace(/\.[^/.]+$/, '') 
+                    || `image_${Date.now()}`;
+                
+                browser.downloads.download({
+                    url: request.url,
+                    filename: `${filename}.${ext}`,
+                    conflictAction: 'uniquify',
+                    saveAs: false
+                });
+            })
+            .catch(error => {
+                console.error('获取HEAD信息失败:', error);
+                browser.downloads.download({
+                    url: request.url,
+                    filename: `image_${Date.now()}.jpg`,
+                    conflictAction: 'uniquify',
+                    saveAs: false
+                });
+            });
         return true;
     }
 
