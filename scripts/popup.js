@@ -132,7 +132,7 @@ function renderImages(urls) {
         const openBtn = document.createElement('button');
         openBtn.className = 'open-button';
         openBtn.innerHTML = '↗';
-        openBtn.onclick = () => window.open(url);
+        openBtn.onclick = () => { window.open(url); window.close(); };
 
         // 处理整个item点击（排除按钮区域）
         item.onclick = (e) => {
